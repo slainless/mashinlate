@@ -1,9 +1,15 @@
-import { NumberInput as ArkNumberInput, type NumberInputRootProps } from '@ark-ui/solid'
-import { Show, children, splitProps, type JSX } from 'solid-js'
-import { css, cx } from 'styled-system/css'
-import { splitCssProps } from 'styled-system/jsx'
-import { numberInput, type NumberInputVariantProps } from 'styled-system/recipes'
-import type { Assign, JsxStyleProps } from 'styled-system/types'
+import {
+  NumberInput as ArkNumberInput,
+  type NumberInputRootProps,
+} from "@ark-ui/solid"
+import { Show, children, splitProps, type JSX } from "solid-js"
+import { css, cx } from "styled-system/css"
+import { splitCssProps } from "styled-system/jsx"
+import {
+  numberInput,
+  type NumberInputVariantProps,
+} from "styled-system/recipes"
+import type { Assign, JsxStyleProps } from "styled-system/types"
 
 export interface NumberInputProps
   extends Assign<JsxStyleProps, NumberInputRootProps>,
@@ -14,14 +20,22 @@ export interface NumberInputProps
 export const NumberInput = (props: NumberInputProps) => {
   const [variantProps, numberInputProps] = numberInput.splitVariantProps(props)
   const [cssProps, elementProps] = splitCssProps(numberInputProps)
-  const [localProps, rootProps] = splitProps(elementProps, ['children', 'class'])
+  const [localProps, rootProps] = splitProps(elementProps, [
+    "children",
+    "class",
+  ])
   const getChildren = children(() => localProps.children)
   const styles = numberInput(variantProps)
 
   return (
-    <ArkNumberInput.Root class={cx(styles.root, css(cssProps), localProps.class)} {...rootProps}>
+    <ArkNumberInput.Root
+      class={cx(styles.root, css(cssProps), localProps.class)}
+      {...rootProps}
+    >
       <Show when={getChildren()}>
-        <ArkNumberInput.Label class={styles.label}>{getChildren()}</ArkNumberInput.Label>
+        <ArkNumberInput.Label class={styles.label}>
+          {getChildren()}
+        </ArkNumberInput.Label>
       </Show>
       <ArkNumberInput.Control class={styles.control}>
         <ArkNumberInput.Input class={styles.input} />

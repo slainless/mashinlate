@@ -1,6 +1,5 @@
-import { SourceLanguageCode, TargetLanguageCode } from 'deepl-node'
-import { Service, ServiceType } from '../document'
-
+import { SourceLanguageCode, TargetLanguageCode } from "deepl-node"
+import { Service, ServiceType } from "../document"
 
 export interface TranslationOptions {
   from: SourceLanguageCode

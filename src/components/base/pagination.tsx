@@ -1,11 +1,14 @@
-import { Pagination as ArkPagination, type PaginationRootProps } from '@ark-ui/solid'
-import { For, splitProps } from 'solid-js'
-import { css, cx } from 'styled-system/css'
-import { splitCssProps } from 'styled-system/jsx'
-import { type PaginationVariantProps, pagination } from 'styled-system/recipes'
-import type { Assign, JsxStyleProps } from 'styled-system/types'
-import { Button } from '~/components/base/button'
-import { IconButton } from '~/components/base/icon-button'
+import {
+  Pagination as ArkPagination,
+  type PaginationRootProps,
+} from "@ark-ui/solid"
+import { For, splitProps } from "solid-js"
+import { css, cx } from "styled-system/css"
+import { splitCssProps } from "styled-system/jsx"
+import { type PaginationVariantProps, pagination } from "styled-system/recipes"
+import type { Assign, JsxStyleProps } from "styled-system/types"
+import { Button } from "~/components/base/button"
+import { IconButton } from "~/components/base/icon-button"
 
 export interface PaginationProps
   extends Assign<JsxStyleProps, PaginationRootProps>,
@@ -14,11 +17,17 @@ export interface PaginationProps
 export const Pagination = (props: PaginationProps) => {
   const [variantProps, numberInputProps] = pagination.splitVariantProps(props)
   const [cssProps, elementProps] = splitCssProps(numberInputProps)
-  const [localProps, rootProps] = splitProps(elementProps, ['children', 'class'])
+  const [localProps, rootProps] = splitProps(elementProps, [
+    "children",
+    "class",
+  ])
   const styles = pagination(variantProps)
 
   return (
-    <ArkPagination.Root class={cx(styles.root, css(cssProps), localProps.class)} {...rootProps}>
+    <ArkPagination.Root
+      class={cx(styles.root, css(cssProps), localProps.class)}
+      {...rootProps}
+    >
       {(api) => (
         <>
           <ArkPagination.PrevTrigger class={styles.prevTrigger}>
@@ -28,8 +37,13 @@ export const Pagination = (props: PaginationProps) => {
           </ArkPagination.PrevTrigger>
           <For each={api().pages}>
             {(page, index) =>
-              page.type === 'page' ? (
-                <ArkPagination.Item {...page} class={styles.item} as={Button} variant="outline">
+              page.type === "page" ? (
+                <ArkPagination.Item
+                  {...page}
+                  class={styles.item}
+                  as={Button}
+                  variant="outline"
+                >
                   {page.value}
                 </ArkPagination.Item>
               ) : (

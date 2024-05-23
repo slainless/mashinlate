@@ -1,17 +1,20 @@
-import { HoverCard } from '@ark-ui/solid'
-import type { ComponentProps } from 'solid-js'
-import { styled } from 'styled-system/jsx'
-import { hoverCard } from 'styled-system/recipes'
-import { createStyleContext } from '~/lib/create-style-context'
+import { HoverCard } from "@ark-ui/solid"
+import type { ComponentProps } from "solid-js"
+import { styled } from "styled-system/jsx"
+import { hoverCard } from "styled-system/recipes"
+import { createStyleContext } from "~/lib/create-style-context"
 
 const { withProvider, withContext } = createStyleContext(hoverCard)
 
 export const Root = withProvider(HoverCard.Root)
-export const Arrow = withContext(styled(HoverCard.Arrow), 'arrow')
-export const ArrowTip = withContext(styled(HoverCard.ArrowTip), 'arrowTip')
-export const Content = withContext(styled(HoverCard.Content), 'content')
-export const Positioner = withContext(styled(HoverCard.Positioner), 'positioner')
-export const Trigger = withContext(styled(HoverCard.Trigger), 'trigger')
+export const Arrow = withContext(styled(HoverCard.Arrow), "arrow")
+export const ArrowTip = withContext(styled(HoverCard.ArrowTip), "arrowTip")
+export const Content = withContext(styled(HoverCard.Content), "content")
+export const Positioner = withContext(
+  styled(HoverCard.Positioner),
+  "positioner",
+)
+export const Trigger = withContext(styled(HoverCard.Trigger), "trigger")
 
 export interface RootProps extends ComponentProps<typeof Root> {}
 export interface ArrowProps extends ComponentProps<typeof Arrow> {}

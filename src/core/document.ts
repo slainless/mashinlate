@@ -18,7 +18,7 @@ export type Line = Line.String | Line.Br
 
 export const enum ServiceType {
   MTL = "mtl",
-  LLM = "llm"
+  LLM = "llm",
 }
 
 export interface Service {

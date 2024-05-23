@@ -1,5 +1,5 @@
-import { defineConfig } from "@solidjs/start/config";
-import { join } from 'vinxi/lib/path'
+import { defineConfig } from "@solidjs/start/config"
+import { join } from "vinxi/lib/path"
 
 const resolve = (path: string) => join(process.cwd(), path)
 
@@ -8,7 +8,7 @@ export default defineConfig({
     resolve: {
       alias: {
         "styled-system": resolve("./styled-system"),
-      }
-    }
-  }
-});
+      },
+    },
+  },
+})

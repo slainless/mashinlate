@@ -12,6 +12,7 @@
     "noEmit": true,
     "types": ["vinxi/types/client"],
     "isolatedModules": true,
+    "verbatimModuleSyntax": true,
     "baseUrl": ".",
     "paths": {
       "styled-system/*": ["./styled-system/*"],

@@ -1,10 +1,11 @@
 import { Title } from "@solidjs/meta"
 import { Link } from "~/components/base/link"
 import Counter from "~/components/Counter"
+import { LayoutMain } from "~/components/layout/main"
 
 export default function Home() {
   return (
-    <main>
+    <LayoutMain>
       <Title>Hello World</Title>
       <h1>Hello world!</h1>
       <Counter />
@@ -15,6 +16,6 @@ export default function Home() {
         </Link>{" "}
         to learn how to build SolidStart apps.
       </p>
-    </main>
+    </LayoutMain>
   )
 }

@@ -1,10 +1,10 @@
 import { ServiceType } from "../document"
-import { TranslationOptions, TranslationService } from "./service"
+import { type TranslationOptions, TranslationService } from "./service"
 import { render } from "micromustache"
 import {
   GoogleGenerativeAI,
   GenerativeModel,
-  ModelParams,
+  type ModelParams,
 } from "@google/generative-ai"
 
 export const defaultSystemMessage =
@@ -14,27 +14,40 @@ export const defaultSystemMessage =
   `- Produce translation as faithful to the document as possible.\n` +
   `Here is the document:`
 
+export type GoogleGenerativeAIInit = Omit<ModelParams, "model"> & {
+  apiKey: string
+  systemMessage?: string
+}
+
 export class GoogleGenerativeAIService extends TranslationService {
-  serviceName = "google-generative-ai"
+  static serviceName = "google-generative-ai"
+  serviceName = GoogleGenerativeAIService.serviceName
+
   type = ServiceType.LLM
 
   private api: GenerativeModel
-  systemMessage: string
 
-  constructor(
-    apiKey: string,
-    opts?: Omit<ModelParams, "model"> & { systemMessage?: string },
-    id?: string,
-  ) {
+  init: GoogleGenerativeAIInit
+
+  constructor(init: GoogleGenerativeAIInit, id?: string) {
     super(id)
-    this.systemMessage = opts?.systemMessage ?? defaultSystemMessage
-    const ai = new GoogleGenerativeAI(apiKey)
-    this.api = ai.getGenerativeModel({ model: "gemini-1.0-pro", ...opts })
+    const __init = Object.assign({ systemMessage: defaultSystemMessage }, init)
+    const ai = new GoogleGenerativeAI(__init.apiKey)
+
+    this.init = __init
+    this.api = ai.getGenerativeModel({ model: "gemini-1.0-pro", ...__init })
+  }
+
+  static from(init?: GoogleGenerativeAIInit, id?: string) {
+    if (init?.apiKey == null || init?.apiKey == "")
+      throw new TypeError("No API key found for Google Generative AI!")
+
+    return new GoogleGenerativeAIService(init, id)
   }
 
   async translate(text: string, opts: TranslationOptions): Promise<string> {
     const result = await this.api.generateContent(
-      render(this.systemMessage, { from: opts.from, to: opts.to }) + text,
+      render(this.init.systemMessage!, { from: opts.from, to: opts.to }) + text,
     )
     return result.response.text()
   }

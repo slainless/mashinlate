@@ -1,6 +1,6 @@
 import { ChatGPTUnofficialProxyAPI } from "chatgpt"
 import { ServiceType } from "../document"
-import { TranslationOptions, TranslationService } from "./service"
+import { type TranslationOptions, TranslationService } from "./service"
 import { render } from "micromustache"
 
 export const defaultSystemMessage =
@@ -10,35 +10,40 @@ export const defaultSystemMessage =
   `- Produce translation as faithful to the document as possible.\n` +
   `Here is the document:\n`
 
-export type ChatGPTUnofficialProxyAPIOptions = Omit<
-  ConstructorParameters<typeof ChatGPTUnofficialProxyAPI>[0],
-  "apiKey"
->
+export type ChatGPTUnofficialInit = ConstructorParameters<
+  typeof ChatGPTUnofficialProxyAPI
+>[0] & {
+  systemMessage?: string
+}
+
 export class ChatGPTUnofficialService extends TranslationService {
-  serviceName = "chatgpt-unofficial"
+  static serviceName = "chatgpt-unofficial"
+  serviceName = ChatGPTUnofficialService.serviceName
+
   type = ServiceType.LLM
 
   private api: ChatGPTUnofficialProxyAPI
-  systemMessage: string
 
-  constructor(
-    accessToken: string,
-    opts?: Omit<ChatGPTUnofficialProxyAPIOptions, "accessToken"> & {
-      systemMessage?: string
-    },
-    id?: string,
-  ) {
+  init: ChatGPTUnofficialInit
+
+  constructor(init: ChatGPTUnofficialInit, id?: string) {
     super(id)
-    this.systemMessage = opts?.systemMessage ?? defaultSystemMessage
-    this.api = new ChatGPTUnofficialProxyAPI({
-      accessToken,
-      ...opts,
-    })
+    const __init = Object.assign({ systemMessage: defaultSystemMessage }, init)
+
+    this.api = new ChatGPTUnofficialProxyAPI(__init)
+    this.init = __init
+  }
+
+  static from(init?: ChatGPTUnofficialInit, id?: string) {
+    if (init?.accessToken == null || init?.accessToken == "")
+      throw new TypeError("No Auth key found for DeepL!")
+
+    return new ChatGPTUnofficialService(init, id)
   }
 
   async translate(text: string, opts: TranslationOptions): Promise<string> {
     const result = await this.api.sendMessage(
-      render(this.systemMessage, { from: opts.from, to: opts.to }) + text,
+      render(this.init.systemMessage!, { from: opts.from, to: opts.to }) + text,
     )
     return result.text
   }

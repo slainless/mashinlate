@@ -1,26 +1,33 @@
 import { ServiceType } from "../document"
-import { TranslationOptions, TranslationService } from "./service"
+import { type TranslationOptions, TranslationService } from "./service"
 import { translate } from "@vitalets/google-translate-api"
 
-type GoogleTranslateOptions = Omit<
+export type GoogleTranslateInit = Omit<
   NonNullable<Parameters<typeof translate>[1]>,
   "from" | "to"
 >
+
 export class GoogleTranslateService extends TranslationService {
-  serviceName = "google-translate"
+  static serviceName = "google-translate"
+  serviceName = GoogleTranslateService.serviceName
+
   type = ServiceType.MTL
 
-  constructor(
-    private options?: GoogleTranslateOptions,
-    id?: string,
-  ) {
+  init?: GoogleTranslateInit
+
+  constructor(init?: GoogleTranslateInit, id?: string) {
     super(id)
+    this.init = init
+  }
+
+  static from(init?: GoogleTranslateInit, id?: string) {
+    return new GoogleTranslateService(init, id)
   }
 
   async translate(text: string, opts: TranslationOptions): Promise<string> {
     const result = await translate(text, {
       ...opts,
-      ...this.options,
+      ...this.init,
     })
     return result.text
   }

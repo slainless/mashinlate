@@ -1,13 +1,22 @@
-import { SourceLanguageCode, TargetLanguageCode } from "deepl-node"
-import { Service, ServiceType } from "../document"
+import type { SourceLanguageCode, TargetLanguageCode } from "deepl-node"
+import { type Service, ServiceType } from "../document"
 
 export interface TranslationOptions {
   from: SourceLanguageCode
   to: TargetLanguageCode
 }
 
+export interface InstantiableService {
+  new (...args: any[]): TranslationService
+  from(init?: any, id?: string): TranslationService
+
+  serviceName: string
+}
+
 export abstract class TranslationService implements Service {
   id: string
+
+  abstract init?: any
 
   abstract serviceName: string
   abstract type: ServiceType

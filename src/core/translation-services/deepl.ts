@@ -1,20 +1,32 @@
-import { Translator, TranslateTextOptions } from "deepl-node"
+import { Translator, type TranslateTextOptions } from "deepl-node"
 import { ServiceType } from "../document"
-import { TranslationOptions, TranslationService } from "./service"
+import { type TranslationOptions, TranslationService } from "./service"
+
+export type DeepLInit = TranslateTextOptions & {
+  authKey: string
+}
 
 export class DeepLService extends TranslationService {
-  serviceName = "deepl"
+  static serviceName = "deepl"
+  serviceName = DeepLService.serviceName
+
   type = ServiceType.MTL
 
   private translator: Translator
 
-  constructor(
-    authKey: string,
-    private options?: TranslateTextOptions,
-    id?: string,
-  ) {
+  init: DeepLInit
+
+  constructor(init: DeepLInit, id?: string) {
     super(id)
-    this.translator = new Translator(authKey)
+    this.translator = new Translator(init.authKey)
+    this.init = init
+  }
+
+  static from(init?: DeepLInit, id?: string) {
+    if (init?.authKey == null || init?.authKey == "")
+      throw new TypeError("No Auth key found for DeepL!")
+
+    return new DeepLService(init, id)
   }
 
   async translate(text: string, opts: TranslationOptions): Promise<string> {
@@ -22,7 +34,7 @@ export class DeepLService extends TranslationService {
       text,
       opts.from,
       opts.to,
-      this.options,
+      this.init,
     )
     return result.text
   }

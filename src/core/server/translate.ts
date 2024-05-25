@@ -1,9 +1,9 @@
-import { Line } from "./document"
-import { Fragment } from "./parser"
+import type { Line } from "../document"
+import type { Fragment } from "../parser"
 import {
   TranslationService,
-  TranslationOptions as __TranslateOptions,
-} from "./translation-services/service"
+  type TranslationOptions as __TranslateOptions,
+} from "../translation-services/service"
 
 function trimLines(lines: Line[]): Line[] {
   let start = 0,
@@ -59,6 +59,11 @@ export async function translate(
   service: TranslationService,
   opts: TranslateOptions,
 ): Promise<Record<number, string>>
+export async function translate(
+  fragment: Fragment | Line.String,
+  service: TranslationService,
+  opts: TranslateOptions,
+): Promise<string | Record<number, string>>
 export async function translate(
   input: Fragment | Line.String,
   service: TranslationService,

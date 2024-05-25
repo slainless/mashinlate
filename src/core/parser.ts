@@ -1,4 +1,5 @@
-import { Line, Document } from "./document"
+import type { Line, Document, Service } from "./document"
+import type { TranslationOptions } from "./translation-services/service"
 
 export function parseLine(line: string, __index: string | number): Line {
   const index = +__index
@@ -10,11 +11,20 @@ export function parseLine(line: string, __index: string | number): Line {
   } satisfies Line.String
 }
 
-export function createDocument(plainText: string): Document {
+export function createDocument(
+  plainText: string,
+  opts: TranslationOptions,
+  services: Service[],
+): Document {
   return {
+    id: crypto.randomUUID(),
     text: plainText,
     lines: plainText.split("\n").map(parseLine),
-    translations: [],
+    results: {},
+    services: Object.fromEntries(
+      services.map((service) => [service.id, service]),
+    ),
+    ...opts,
   }
 }
 

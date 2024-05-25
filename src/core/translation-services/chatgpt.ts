@@ -1,6 +1,6 @@
-import { ChatGPTAPI, ChatGPTAPIOptions } from "chatgpt"
+import { ChatGPTAPI, type ChatGPTAPIOptions } from "chatgpt"
 import { ServiceType } from "../document"
-import { TranslationOptions, TranslationService } from "./service"
+import { type TranslationOptions, TranslationService } from "./service"
 import { render } from "micromustache"
 
 export const defaultSystemMessage =
@@ -11,30 +11,36 @@ export const defaultSystemMessage =
   `- Produce translation as faithful to the document as possible.\n` +
   `Here is the document:`
 
+export type ChatGPTInit = ChatGPTAPIOptions
+
 export class ChatGPTService extends TranslationService {
-  serviceName = "chatgpt"
+  static serviceName = "chatgpt"
+  serviceName = ChatGPTService.serviceName
+
   type = ServiceType.LLM
 
   private api: ChatGPTAPI
-  systemMessage: string
 
-  constructor(
-    apiKey: string,
-    options?: Omit<ChatGPTAPIOptions, "apiKey">,
-    id?: string,
-  ) {
+  init: ChatGPTInit
+
+  constructor(init: ChatGPTInit, id?: string) {
     super(id)
-    const { systemMessage, ...rest } = options ?? {}
-    this.systemMessage = systemMessage ?? defaultSystemMessage
-    this.api = new ChatGPTAPI({
-      ...rest,
-      apiKey,
-    })
+    const __init = Object.assign({ systemMessage: defaultSystemMessage }, init)
+
+    this.api = new ChatGPTAPI(__init)
+    this.init = __init
+  }
+
+  static from(init?: ChatGPTInit, id?: string) {
+    if (init?.apiKey == null || init?.apiKey == "")
+      throw new TypeError("No API key found for ChatGPT!")
+
+    return new ChatGPTService(init, id)
   }
 
   async translate(text: string, opts: TranslationOptions): Promise<string> {
     const result = await this.api.sendMessage(text, {
-      systemMessage: render(this.systemMessage, {
+      systemMessage: render(this.init.systemMessage!, {
         from: opts.from,
         to: opts.to,
       }),

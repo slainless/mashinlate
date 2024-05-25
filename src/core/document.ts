@@ -1,42 +1,65 @@
-export namespace Line {
-  export interface Generic {
-    type: string
-    index: number
-  }
+import { Type, type Static } from "@sinclair/typebox"
+import type { SourceLanguageCode, TargetLanguageCode } from "deepl-node"
+import type { Simplify } from "type-fest"
 
-  export interface Br extends Generic {
-    type: "br"
-  }
-
-  export interface String extends Generic {
-    type: "string"
-    content: string
-  }
-}
-
-export type Line = Line.String | Line.Br
-
-export const enum ServiceType {
+export enum ServiceType {
   MTL = "mtl",
   LLM = "llm",
 }
 
-export interface Service {
-  id: string
+export namespace Schema {
+  export namespace Line {
+    export const Generic = Type.Object({
+      type: Type.String(),
+      index: Type.Number(),
+    })
 
-  serviceName: string
-  type: ServiceType
-}
+    export const Br = Type.Intersect([
+      Generic,
+      Type.Object({
+        type: Type.Literal("br"),
+      }),
+    ])
 
-export interface History {
-  service: Service
-  translations: {
-    [I: string]: string[]
+    export const String = Type.Intersect([
+      Generic,
+      Type.Object({
+        type: Type.Literal("string"),
+        content: Type.String(),
+      }),
+    ])
   }
+
+  export const Service = Type.Object({
+    id: Type.String(),
+
+    serviceName: Type.String(),
+    type: Type.Enum(ServiceType),
+
+    init: Type.Optional(Type.Record(Type.String(), Type.Any())),
+  })
+
+  export const Result = Type.Record(Type.Number(), Type.Array(Type.String()))
+
+  export const Document = Type.Object({
+    id: Type.String(),
+
+    text: Type.String(),
+    lines: Type.Array(Line.Generic),
+    results: Type.Record(Type.String(), Result),
+    services: Type.Record(Type.String(), Service),
+
+    from: Type.String(),
+    to: Type.String(),
+  })
 }
 
-export interface Document {
-  text: string
-  lines: Line[]
-  translations: History[]
+export namespace Line {
+  export type Generic = Static<typeof Schema.Line.Generic>
+  export type Br = Simplify<Static<typeof Schema.Line.Br>>
+  export type String = Simplify<Static<typeof Schema.Line.String>>
 }
+
+export type Line = Line.String | Line.Br
+export type Service = Static<typeof Schema.Service>
+export type Document = Static<typeof Schema.Document>

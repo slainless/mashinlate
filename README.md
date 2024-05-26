@@ -1,32 +1,27 @@
-# SolidStart
+# Mashinlate
 
-Everything you need to build a Solid project, powered by [`solid-start`](https://start.solidjs.com);
+Built with [SolidJS](https://www.solidjs.com/), [PandaCSS](https://panda-css.com/), [ParkUI](https://park-ui.com/).
 
-## Creating a project
+## Available Services
 
-```bash
-# create a new project in the current directory
-npm init solid@latest
+- Any version of ChatGPT: 3.5, 4.0, etc.
+- Unofficial ChatGPT Proxy Server
+- DeepL
+- Google Translate
+- Google Generative AI: Gemini 1.0 Pro
 
-# create a new project in my-app
-npm init solid@latest my-app
-```
+## Data Persistence
 
-## Developing
+No data is stored on the server; all data is stored inside the client's browser.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Server-side Notice
 
-```bash
-npm run dev
+Server context is used only when necessary, such as when a task is deemed impossible to run inside a browser context. For example, translation procedures need to be executed in a server-side environment to avoid browser limitations.
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+Therefore, a server-side environment is a necessity.
 
-## Building
+## End-User Notice
 
-Solid apps are built with _presets_, which optimise your project for deployment to different environments.
+Some services require the end-user to provide some form of access identification, such as an authorization key, API token, etc. This means the end-user must fully trust the deployed service/system to use the service provided. I, as the author of this software, WILL NOT TAKE ANY RESPONSIBILITY for any loss incurred from the usage of this system/service, as stated in this project license (MIT).
 
-By default, `npm run build` will generate a Node app that you can run with `npm start`. To use a different preset, add it to the `devDependencies` in `package.json` and specify in your `app.config.js`.
-
-## This project was created with the [Solid CLI](https://solid-cli.netlify.app)
+As of 26/05/2024, with the current implementation, only essential data is sent by the browser, and only during those moments. Additionally, the server will not store any of this data.

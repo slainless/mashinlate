@@ -23,7 +23,6 @@ export async function createDB(dbName?: string): Promise<Database | undefined> {
     documents: `id, text, lines, results, services, from, to`,
   })
 
-  await db.open()
   return db
 }
 

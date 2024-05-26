@@ -11,4 +11,10 @@ export default defineConfig({
   jsxFramework: "solid",
   outdir: "styled-system",
   outExtension: "js",
+  conditions: {
+    extend: {
+      dark: "&.dark, .dark &, [data-theme=dark] &",
+      light: "&.light, .light &, [data-theme=light] &",
+    },
+  },
 })

@@ -5,6 +5,7 @@ import {
   createEffect,
   createMemo,
   createSignal,
+  useContext,
   type Accessor,
   type ParentComponent,
 } from "solid-js"
@@ -47,16 +48,19 @@ export const AppStoreProvider: ParentComponent<AppStoreProviderProps> = (
   )
   const [context] = contextStore
 
-  const database = createAsync(() => createDB(context.database))
+  const [database, setDatabase] = createSignal<Database>()
+
+  createEffect(() => {
+    createDB(context.database).then((db) => {
+      setDatabase(db)
+    })
+  })
+
   const data = createAsync(() => loadData(database()))
   const dataStore = createMemo(() => {
     const __data = data()
     if (__data == null) return
     return createStore(__data)
-  })
-
-  createEffect(() => {
-    console.log(context, data())
   })
 
   return (
@@ -66,4 +70,12 @@ export const AppStoreProvider: ParentComponent<AppStoreProviderProps> = (
       {props.children}
     </AppStoreContext.Provider>
   )
+}
+
+function context() {
+  return useContext(AppStoreContext)
+}
+
+export function useDocuments() {
+  return context().data()?.[0].documents
 }

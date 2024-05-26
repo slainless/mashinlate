@@ -1,3 +1,5 @@
+"use server"
+
 import { action } from "@solidjs/router"
 import type { Line, Service } from "../document"
 import type { Fragment } from "../parser"
@@ -24,7 +26,6 @@ const __translate = action(
     service: Service,
     opts: TranslationOptions,
   ): Promise<string | Record<number, string>> => {
-    "use server"
     const __service = serviceMap[service.serviceName]
     if (__service == null)
       throw new Response("Unknown service", { status: 400 })

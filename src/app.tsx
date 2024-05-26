@@ -4,20 +4,19 @@ import { FileRoutes } from "@solidjs/start/router"
 import { Suspense } from "solid-js"
 import "./app.css"
 import { AppStoreProvider } from "./components/context/app"
-// import { ActiveDocumentProvider } from "./components/context/active-document"
+import { ActiveDocumentProvider } from "./components/context/active-document"
+import { handleClientThemeCookie } from "./core/theme"
 
 export default function App() {
+  handleClientThemeCookie()
   return (
     <Router
       root={(props) => (
         <MetaProvider>
-          {/* <AppStoreProvider>
+          <AppStoreProvider>
             <ActiveDocumentProvider>
               <Suspense>{props.children}</Suspense>
             </ActiveDocumentProvider>
-          </AppStoreProvider> */}
-          <AppStoreProvider>
-            <Suspense>{props.children}</Suspense>
           </AppStoreProvider>
         </MetaProvider>
       )}

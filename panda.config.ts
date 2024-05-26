@@ -1,4 +1,4 @@
-import { defineConfig } from "@pandacss/dev"
+import { defineConfig, defineGlobalStyles } from "@pandacss/dev"
 
 export default defineConfig({
   preflight: true,
@@ -15,6 +15,11 @@ export default defineConfig({
     extend: {
       dark: "&.dark, .dark &, [data-theme=dark] &",
       light: "&.light, .light &, [data-theme=light] &",
+    },
+  },
+  globalVars: {
+    extend: {
+      "--global-font-body": "Epilogue",
     },
   },
 })

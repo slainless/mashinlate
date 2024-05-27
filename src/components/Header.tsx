@@ -15,6 +15,9 @@ const HeaderContainer = styled("header", {
     p: "2",
     borderBlockEnd: "1px solid",
     borderBlockEndColor: "border.subtle",
+    background: "bg.canvas/90",
+    backdropBlur: "md",
+    backdropFilter: "auto",
   },
 })
 

@@ -19,7 +19,7 @@ export default defineConfig({
   },
   globalVars: {
     extend: {
-      "--global-font-body": "Epilogue",
+      "--global-font-body": '"Plus Jakarta Sans"',
     },
   },
 })

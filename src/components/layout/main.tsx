@@ -9,13 +9,13 @@ import { styled } from "styled-system/jsx"
 const Grid = styled("div", {
   base: {
     display: "grid",
-    gridTemplateAreas: `
-      "document-sidebar header" 
-      "document-sidebar main"
-      "document-sidebar footer"
-    `,
+    // gridTemplateAreas: `
+    //   "document-sidebar header"
+    //   "document-sidebar main"
+    //   "document-sidebar footer"
+    // `,
     gridTemplateColumns: "240px auto",
-    gridTemplateRows: "min-content auto 0",
+    // gridTemplateRows: "min-content auto 0",
     minH: "100vh",
   },
 })
@@ -23,10 +23,12 @@ const Grid = styled("div", {
 export const LayoutMain: ParentComponent = ({ children }) => {
   return (
     <Grid id="container">
-      <Header gridArea="header" />
-      <DocumentSidebar gridArea="document-sidebar" />
-      <DocumentContainer gridArea="main">{children}</DocumentContainer>
-      <Footer gridArea="footer" />
+      <DocumentSidebar />
+      <div>
+        <Header position="sticky" top="0" />
+        <DocumentContainer>{children}</DocumentContainer>
+        <Footer />
+      </div>
     </Grid>
   )
 }

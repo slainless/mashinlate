@@ -1,13 +1,18 @@
-import { Index, type ComponentProps, type ParentProps } from "solid-js"
+import { createMemo, Index, type ComponentProps } from "solid-js"
 import { Tabs } from "./base/tabs"
-import { styled, type StyledComponent } from "styled-system/jsx"
+import { styled } from "styled-system/jsx"
 import { createStore } from "solid-js/store"
 import { css } from "styled-system/css"
+import { useMatch } from "@solidjs/router"
 
-const route = (id: string, route: string, display: string) => ({
-  id,
-  route,
+const route = (
+  display: string,
+  defaultRoute: string,
+  matchers: ReturnType<typeof useMatch>[],
+) => ({
   display,
+  matchers,
+  defaultRoute,
 })
 
 const HeaderContainer = styled("header", {
@@ -23,20 +28,44 @@ const HeaderContainer = styled("header", {
 
 export interface HeaderProps extends ComponentProps<typeof HeaderContainer> {}
 export function Header(props: HeaderProps) {
-  const [routes, setRoutes] = createStore([
-    route("document", "/document", "Document"),
-    route("service", "/service", "Service"),
-  ])
+  const [routes, setRoutes] = createStore({
+    document: route("Document", "/document", [
+      useMatch(() => "/document"),
+      useMatch(() => "/document/:id"),
+    ]),
+    service: route("Service", "/service", [useMatch(() => "/service")]),
+  })
+
+  const active = createMemo(() => {
+    for (const id in routes)
+      for (const match of routes[id as keyof typeof routes].matchers)
+        if (match() != null)
+          return [id, routes[id as keyof typeof routes]] as const
+    return [null, null] as const
+  })
+
   return (
     <HeaderContainer {...props}>
       <nav class={css({ w: "max-content" })}>
-        <Tabs variant="enclosed" defaultValue="document">
+        <Tabs variant="enclosed" value={active()[0]}>
           <Tabs.List>
-            <Index each={routes}>
+            <Index each={Object.entries(routes)}>
               {(item, index) => {
+                const [key, route] = item()
+                const active = route.matchers.reduce((a, b) =>
+                  a() == null ? b : a,
+                )
                 return (
-                  <Tabs.Trigger key={item().id} value={item().route}>
-                    {item().display}
+                  <Tabs.Trigger
+                    value={key}
+                    asChild={(props) => (
+                      <a
+                        href={active()?.path ?? route.defaultRoute}
+                        {...props()}
+                      />
+                    )}
+                  >
+                    {route.display}
                   </Tabs.Trigger>
                 )
               }}

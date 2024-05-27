@@ -20,15 +20,22 @@ const Grid = styled("div", {
   },
 })
 
+const Main = styled("div", {
+  base: {
+    display: "grid",
+    gridTemplateRows: "max-content auto max-content",
+  },
+})
+
 export const LayoutMain: ParentComponent = ({ children }) => {
   return (
     <Grid id="container">
       <DocumentSidebar />
-      <div>
+      <Main>
         <Header position="sticky" top="0" />
         <DocumentContainer>{children}</DocumentContainer>
         <Footer />
-      </div>
+      </Main>
     </Grid>
   )
 }

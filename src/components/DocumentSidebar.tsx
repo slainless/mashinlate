@@ -41,8 +41,21 @@ export function DocumentSidebar(props: DocumentSidebarProps) {
         <For each={data.documents ?? []}>
           {(item, index) => {
             return (
-              <Button size="sm" variant="ghost" textOverflow={"ellipsis"}>
-                {item.id}
+              <Button
+                asChild={(props) => <a {...props()} />}
+                size="sm"
+                variant="ghost"
+                w="100%"
+              >
+                <span
+                  class={css({
+                    textOverflow: "ellipsis",
+                    overflow: "hidden",
+                    whiteSpace: "nowrap",
+                  })}
+                >
+                  {item.id}
+                </span>
               </Button>
             )
           }}

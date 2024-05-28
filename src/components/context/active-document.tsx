@@ -7,7 +7,7 @@ import {
   type Accessor,
   type ParentComponent,
 } from "solid-js"
-import { createStore, produce } from "solid-js/store"
+import { produce } from "solid-js/store"
 import type { Document, Line, Service } from "~/core/document"
 import { AppStoreContext } from "./app"
 import type { Fragment } from "~/core/parser"
@@ -39,17 +39,14 @@ export const ActiveDocumentContext = createContext<ActiveDocument>({
 } satisfies ActiveDocument)
 
 export const ActiveDocumentProvider: ParentComponent = (props) => {
-  const {
-    context: contextStore,
-    data: dataStore,
-    database,
-  } = useContext(AppStoreContext)
-  const [context] = contextStore
+  const { ctxStore, dataStore, database } = useContext(AppStoreContext)
+
+  const [appCtx] = ctxStore
+  const [data, setData] = dataStore
 
   const document = createMemo(() => {
-    const store = dataStore()
-    if (store == null) return
-    return store[0].documents[context.activeDocument ?? -1]
+    if (data.documents == null) return
+    return data.documents[appCtx.activeDocument ?? -1]
   })
 
   createEffect(() => {
@@ -60,30 +57,22 @@ export const ActiveDocumentProvider: ParentComponent = (props) => {
     db.documents.put(doc)
   })
 
-  const guard = () => {
-    const store = dataStore()
-    if (store == null) throw new TypeError("Data is not loaded yet")
-
-    const doc = document()
-    if (doc == null) throw new TypeError("Operating on null active document")
-
-    return { store, document: doc }
-  }
-
   return (
     <ActiveDocumentContext.Provider
       value={{
         document,
         getService(id) {
-          const { document } = guard()
-          return document.services[id]
+          return document()?.services[id]
         },
         addService(id, service) {
-          const { store } = guard()
-          const [, setData] = store
+          if (document() == null)
+            throw new Error(
+              "ActiveDocument: attempt to add service to null document",
+            )
+
           setData(
             "documents",
-            context.activeDocument!,
+            appCtx.activeDocument!,
             "services",
             produce((record) => {
               record[id] = service
@@ -91,11 +80,14 @@ export const ActiveDocumentProvider: ParentComponent = (props) => {
           )
         },
         removeService(id) {
-          const { store } = guard()
-          const [, setData] = store
+          if (document() == null)
+            throw new Error(
+              "ActiveDocument: attempt to remove service from null document",
+            )
+
           setData(
             "documents",
-            context.activeDocument!,
+            appCtx.activeDocument!,
             "services",
             produce((record) => {
               delete record[id]
@@ -104,15 +96,18 @@ export const ActiveDocumentProvider: ParentComponent = (props) => {
         },
 
         async translate(input, service, opts) {
-          const { store, document } = guard()
+          const __document = document()
+          if (__document == null) {
+            throw new Error(
+              "ActiveDocument: attempt to translate null document",
+            )
+          }
 
-          const [, setData] = store
-
-          if (document.results[service.id] == null)
+          if (__document.results[service.id] == null)
             throw new TypeError("Attempting to use unregistered service")
 
           for (const line of "type" in input ? [input] : input.lines)
-            if (document.lines[line.index] !== line)
+            if (__document.lines[line.index] !== line)
               throw new TypeError(
                 "Attempting to translate line from another document!",
               )
@@ -121,7 +116,7 @@ export const ActiveDocumentProvider: ParentComponent = (props) => {
           if ("type" in input && typeof result == "string") {
             setData(
               "documents",
-              context.activeDocument!,
+              appCtx.activeDocument!,
               "results",
               produce((record) => {
                 if (record[service.id] == null) record[service.id] = {}
@@ -134,7 +129,7 @@ export const ActiveDocumentProvider: ParentComponent = (props) => {
           } else {
             setData(
               "documents",
-              context.activeDocument!,
+              appCtx.activeDocument!,
               "results",
               produce((record) => {
                 if (record[service.id] == null) record[service.id] = {}

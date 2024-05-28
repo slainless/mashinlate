@@ -1,39 +1,35 @@
 import { createAsync } from "@solidjs/router"
-import type Dexie from "dexie"
 import {
   createContext,
   createEffect,
-  createMemo,
   createSignal,
   useContext,
-  type Accessor,
   type ParentComponent,
 } from "solid-js"
 import { createStore, produce } from "solid-js/store"
-import { loadAppContext, type AppContext } from "~/core/app"
-import {
-  createDB,
-  type Database,
-  loadData,
-  writeData,
-  type Data,
-} from "~/core/data"
+import { isServer } from "solid-js/web"
+import { lenientLoadAppCtx, type AppContext } from "~/core/app"
+import { createDB, type Database, loadFromDB } from "~/core/data"
+import type { Document } from "~/core/document"
 import { syncWithLocalStorage } from "~/lib/sync-store"
-import { Nullable } from "~/lib/type-helper"
+
+export interface DataStore {
+  documents: Document[] | undefined
+}
 
 export const AppStoreContext = createContext({
-  context: createStore<AppContext>({
+  ctxStore: createStore<AppContext>({
     activeDocument: undefined,
     database: undefined,
   }),
-  data: createSignal(
-    Nullable(
-      createStore<Data>({
-        documents: [],
-      }),
-    ),
-  )[0],
+  dataStore: createStore<DataStore>({
+    documents: undefined,
+  }),
   database: createSignal<Database>()[0],
+
+  async pushDocument(document: Document) {
+    return -1
+  },
 })
 
 export interface AppStoreProviderProps {}
@@ -42,40 +38,63 @@ const localStorageKey = "app_data"
 export const AppStoreProvider: ParentComponent<AppStoreProviderProps> = (
   props,
 ) => {
-  const contextStore = syncWithLocalStorage(
-    createStore(loadAppContext(localStorageKey)),
+  const [appCtxStore, setAppCtxStore] = syncWithLocalStorage(
+    createStore(lenientLoadAppCtx(localStorageKey)),
     localStorageKey,
   )
-  const [context] = contextStore
-
   const [database, setDatabase] = createSignal<Database>()
 
   createEffect(() => {
-    createDB(context.database).then((db) => {
+    createDB(appCtxStore.database).then((db) => {
       setDatabase(db)
     })
   })
 
-  const data = createAsync(() => loadData(database()))
-  const dataStore = createMemo(() => {
-    const __data = data()
-    if (__data == null) return
-    return createStore(__data)
+  const documentsFromDB = createAsync(() => loadFromDB(database()))
+  const [dataStore, setDataStore] = createStore<DataStore>({
+    documents: undefined,
+  })
+
+  createEffect(() => {
+    const __data = documentsFromDB()
+    if (__data != null)
+      setDataStore("documents", () => documentsFromDB()?.documents)
   })
 
   return (
     <AppStoreContext.Provider
-      value={{ context: contextStore, data: dataStore, database }}
+      value={{
+        ctxStore: [appCtxStore, setAppCtxStore],
+        dataStore: [dataStore, setDataStore],
+        database,
+
+        async pushDocument(document) {
+          if (database() == null)
+            throw new Error("AppStore: database failed to load")
+          if (dataStore.documents == null)
+            throw new TypeError("AppStore: documents is null")
+
+          setDataStore(
+            "documents",
+            produce((documents) => {
+              documents!.push(document)
+            }),
+          )
+
+          await database()!.documents.put(document)
+          return dataStore.documents!.length + 1
+        },
+      }}
     >
       {props.children}
     </AppStoreContext.Provider>
   )
 }
 
-function context() {
+export function useAppContext() {
   return useContext(AppStoreContext)
 }
 
-export function useDocuments() {
-  return context().data()?.[0].documents
+export function useDataStore() {
+  return useAppContext().dataStore
 }

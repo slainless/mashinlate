@@ -26,7 +26,7 @@ export async function createDB(dbName?: string): Promise<Database | undefined> {
   return db
 }
 
-export async function loadData(db?: Database): Promise<Data> {
+export async function loadFromDB(db?: Database): Promise<Data> {
   if (isServer || db == null)
     return {
       documents: [],
@@ -40,7 +40,7 @@ export async function loadData(db?: Database): Promise<Data> {
   throw new TypeError("Data is not compatible with current schema!")
 }
 
-export async function writeData(db: Database, data: Data) {
+export async function writeToDB(db: Database, data: Data) {
   if (isServer) return
 
   await Promise.all([db.documents.bulkPut(data.documents)])

@@ -8,14 +8,14 @@ import {
 
 export const NewDocumentContext = createContext({
   content: createSignal(""),
-  from: createSignal<SourceLanguageCode>("en"),
-  to: createSignal<TargetLanguageCode>("en-US"),
+  from: createSignal<SourceLanguageCode>(),
+  to: createSignal<TargetLanguageCode>(),
 })
 
 export function NewDocumentProvider(props: ParentProps) {
   const content = createSignal("")
-  const from = createSignal<SourceLanguageCode>("en")
-  const to = createSignal<TargetLanguageCode>("en-US")
+  const from = createSignal<SourceLanguageCode>()
+  const to = createSignal<TargetLanguageCode>()
 
   return (
     <NewDocumentContext.Provider value={{ content, from, to }}>
@@ -30,4 +30,12 @@ export function useNewDocument() {
 
 export function useContent() {
   return useNewDocument().content
+}
+
+export function useSourceLanguage() {
+  return useNewDocument().from
+}
+
+export function useTargetLanguage() {
+  return useNewDocument().to
 }

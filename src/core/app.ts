@@ -17,7 +17,7 @@ export namespace Compiled {
 
 export type AppContext = Static<typeof Schema.AppContext>
 
-export function loadAppContext(key: string): AppContext {
+export function lenientLoadAppCtx(key: string): AppContext {
   function defaultContext(id?: string) {
     return {
       activeDocument: undefined,
@@ -49,7 +49,7 @@ export function loadAppContext(key: string): AppContext {
   }
 }
 
-export function writeAppContext(key: string, context: AppContext) {
+export function writeAppCtx(key: string, context: AppContext) {
   // window.localStorage.setItem(key, serialize(context))
   window.localStorage.setItem(key, JSON.stringify(context))
 }

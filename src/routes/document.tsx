@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <LayoutMain>
       <DocumentInputArea />
-      <ConfirmFloater position="sticky" bottom="2" />
+      <ConfirmFloater position="sticky" bottom="5" />
     </LayoutMain>
   )
 }

@@ -1,0 +1,40 @@
+export const commonLanguageCode = [
+  "ar",
+  "bg",
+  "cs",
+  "da",
+  "de",
+  "el",
+  "es",
+  "et",
+  "fi",
+  "fr",
+  "hu",
+  "id",
+  "it",
+  "ja",
+  "ko",
+  "lt",
+  "lv",
+  "nb",
+  "nl",
+  "pl",
+  "ro",
+  "ru",
+  "sk",
+  "sl",
+  "sv",
+  "tr",
+  "uk",
+  "zh",
+] as const
+
+export const sourceLanguageCode = [...commonLanguageCode, "en", "pt"] as const
+
+export const targetLanguageCode = [
+  ...commonLanguageCode,
+  "en-GB",
+  "en-US",
+  "pt-BR",
+  "pt-PT",
+] as const

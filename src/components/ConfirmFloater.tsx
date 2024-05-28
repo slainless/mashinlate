@@ -53,8 +53,8 @@ export function ConfirmFloater(props: ConfirmFloaterProps) {
       { from: sourceLang()!, to: targetLang()! },
       [],
     )
-    const latestIdx = await pushDocument(newDocument)
-    setAppCtx("activeDocument", () => latestIdx)
+    await pushDocument(newDocument)
+    setAppCtx("activeDocument", () => newDocument.id)
   }
 
   return (

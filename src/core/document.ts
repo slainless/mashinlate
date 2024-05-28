@@ -47,7 +47,6 @@ export namespace Schema {
     text: Type.String(),
     lines: Type.Array(Line.Generic),
     results: Type.Record(Type.String(), Result),
-    services: Type.Record(Type.String(), Service),
 
     from: Type.String(),
     to: Type.String(),

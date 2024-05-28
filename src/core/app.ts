@@ -5,7 +5,7 @@ import { TypeCompiler } from "@sinclair/typebox/compiler"
 export namespace Schema {
   export const AppContext = Type.Object({
     activeDocument: Type.Optional(
-      Type.Union([Type.Number(), Type.Undefined()]),
+      Type.Union([Type.String(), Type.Undefined()]),
     ),
     database: Type.Optional(Type.Union([Type.String(), Type.Undefined()])),
   })

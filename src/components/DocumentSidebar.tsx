@@ -38,7 +38,7 @@ export function DocumentSidebar(props: DocumentSidebarProps) {
         {/* <Separator mt="4" /> */}
       </div>
       <div class={css({ p: "4" })}>
-        <For each={data.documents ?? []}>
+        <For each={Object.values(data.documents)}>
           {(item, index) => {
             return (
               <Button

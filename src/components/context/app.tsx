@@ -10,11 +10,12 @@ import { createStore, produce } from "solid-js/store"
 import { isServer } from "solid-js/web"
 import { lenientLoadAppCtx, type AppContext } from "~/core/app"
 import { createDB, type Database, loadFromDB } from "~/core/data"
-import type { Document } from "~/core/document"
+import type { Document, Service } from "~/core/document"
 import { syncWithLocalStorage } from "~/lib/sync-store"
 
 export interface DataStore {
-  documents: Document[] | undefined
+  documents: Record<string, Document>
+  services: Record<string, Service>
 }
 
 export const AppStoreContext = createContext({
@@ -23,13 +24,12 @@ export const AppStoreContext = createContext({
     database: undefined,
   }),
   dataStore: createStore<DataStore>({
-    documents: undefined,
+    documents: {},
+    services: {},
   }),
   database: createSignal<Database>()[0],
 
-  async pushDocument(document: Document) {
-    return -1
-  },
+  async pushDocument(document: Document) {},
 })
 
 export interface AppStoreProviderProps {}
@@ -52,13 +52,19 @@ export const AppStoreProvider: ParentComponent<AppStoreProviderProps> = (
 
   const documentsFromDB = createAsync(() => loadFromDB(database()))
   const [dataStore, setDataStore] = createStore<DataStore>({
-    documents: undefined,
+    documents: {},
+    services: {},
   })
 
   createEffect(() => {
     const __data = documentsFromDB()
-    if (__data != null)
-      setDataStore("documents", () => documentsFromDB()?.documents)
+    if (__data == null) return
+
+    const documents = documentsFromDB()
+    if (documents == null) return
+
+    setDataStore("documents", () => documents.documents)
+    setDataStore("services", () => documents.services)
   })
 
   return (
@@ -77,12 +83,11 @@ export const AppStoreProvider: ParentComponent<AppStoreProviderProps> = (
           setDataStore(
             "documents",
             produce((documents) => {
-              documents!.push(document)
+              documents[+document.id] = document
             }),
           )
 
           await database()!.documents.put(document)
-          return dataStore.documents!.length + 1
         },
       }}
     >

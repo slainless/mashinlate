@@ -17,9 +17,9 @@ import { translate } from "~/core/actions/translate"
 export interface ActiveDocument {
   document: Accessor<Document | undefined>
 
-  addService(id: string, service: Service): void
-  getService(id: string): Service | undefined
-  removeService(id: string): void
+  // addService(id: string, service: Service): void
+  // getService(id: string): Service | undefined
+  // removeService(id: string): void
 
   translate(
     line: Line.String | Fragment,
@@ -30,11 +30,11 @@ export interface ActiveDocument {
 
 export const ActiveDocumentContext = createContext<ActiveDocument>({
   document: createSignal<Document>()[0],
-  addService(id, service) {},
-  getService(id) {
-    return undefined
-  },
-  removeService(id) {},
+  // addService(id, service) {},
+  // getService(id) {
+  //   return undefined
+  // },
+  // removeService(id) {},
   async translate(line, service, opts) {},
 } satisfies ActiveDocument)
 
@@ -45,8 +45,8 @@ export const ActiveDocumentProvider: ParentComponent = (props) => {
   const [data, setData] = dataStore
 
   const document = createMemo(() => {
-    if (data.documents == null) return
-    return data.documents[appCtx.activeDocument ?? -1]
+    if (data.documents == null || appCtx.activeDocument == null) return
+    return data.documents[appCtx.activeDocument]
   })
 
   createEffect(() => {
@@ -61,39 +61,39 @@ export const ActiveDocumentProvider: ParentComponent = (props) => {
     <ActiveDocumentContext.Provider
       value={{
         document,
-        getService(id) {
-          return document()?.services[id]
-        },
-        addService(id, service) {
-          if (document() == null)
-            throw new Error(
-              "ActiveDocument: attempt to add service to null document",
-            )
+        // getService(id) {
+        //   return document()?.services[id]
+        // },
+        // addService(id, service) {
+        //   if (document() == null)
+        //     throw new Error(
+        //       "ActiveDocument: attempt to add service to null document",
+        //     )
 
-          setData(
-            "documents",
-            appCtx.activeDocument!,
-            "services",
-            produce((record) => {
-              record[id] = service
-            }),
-          )
-        },
-        removeService(id) {
-          if (document() == null)
-            throw new Error(
-              "ActiveDocument: attempt to remove service from null document",
-            )
+        //   setData(
+        //     "documents",
+        //     appCtx.activeDocument!,
+        //     "services",
+        //     produce((record) => {
+        //       record[id] = service
+        //     }),
+        //   )
+        // },
+        // removeService(id) {
+        //   if (document() == null)
+        //     throw new Error(
+        //       "ActiveDocument: attempt to remove service from null document",
+        //     )
 
-          setData(
-            "documents",
-            appCtx.activeDocument!,
-            "services",
-            produce((record) => {
-              delete record[id]
-            }),
-          )
-        },
+        //   setData(
+        //     "documents",
+        //     appCtx.activeDocument!,
+        //     "services",
+        //     produce((record) => {
+        //       delete record[id]
+        //     }),
+        //   )
+        // },
 
         async translate(input, service, opts) {
           const __document = document()

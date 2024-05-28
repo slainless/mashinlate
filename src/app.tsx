@@ -5,6 +5,7 @@ import { Suspense } from "solid-js"
 import "./app.css"
 import { AppStoreProvider } from "./components/context/app"
 import { ActiveDocumentProvider } from "./components/context/active-document"
+import { NewDocumentProvider } from "./components/context/new-document"
 import { handleClientThemeCookie } from "./core/theme"
 
 export default function App() {
@@ -15,7 +16,9 @@ export default function App() {
         <MetaProvider>
           <AppStoreProvider>
             <ActiveDocumentProvider>
-              <Suspense>{props.children}</Suspense>
+              <NewDocumentProvider>
+                <Suspense>{props.children}</Suspense>
+              </NewDocumentProvider>
             </ActiveDocumentProvider>
           </AppStoreProvider>
         </MetaProvider>

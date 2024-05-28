@@ -11,7 +11,7 @@ export function DocumentContainer(props: DocumentContainerProps) {
   const { children, ...rest } = restProps
 
   return (
-    <main class={css(container.raw({}), styleProps, cssProp)} {...rest}>
+    <main class={css({ p: "5" }, styleProps, cssProp)} {...rest}>
       {children}
     </main>
   )

@@ -6,16 +6,27 @@ import { createStyleContext } from "~/lib/create-style-context"
 
 const { withProvider, withContext } = createStyleContext(card)
 
-export const Root = withProvider(styled(ark.div), "root")
-export const Body = withContext(styled(ark.div), "body")
-export const Description = withContext(styled(ark.div), "description")
-export const Footer = withContext(styled(ark.div), "footer")
-export const Header = withContext(styled(ark.div), "header")
-export const Title = withContext(styled(ark.h3), "title")
+export const CardRoot = withProvider(styled(ark.div), "root")
+export const CardBody = withContext(styled(ark.div), "body")
+export const CardDescription = withContext(styled(ark.div), "description")
+export const CardFooter = withContext(styled(ark.div), "footer")
+export const CardHeader = withContext(styled(ark.div), "header")
+export const CardTitle = withContext(styled(ark.h3), "title")
 
-export interface RootProps extends ComponentProps<typeof Root> {}
-export interface BodyProps extends ComponentProps<typeof Body> {}
-export interface DescriptionProps extends ComponentProps<typeof Description> {}
-export interface FooterProps extends ComponentProps<typeof Footer> {}
-export interface HeaderProps extends ComponentProps<typeof Header> {}
-export interface TitleProps extends ComponentProps<typeof Title> {}
+export interface CardRootProps extends ComponentProps<typeof CardRoot> {}
+export interface CardBodyProps extends ComponentProps<typeof CardBody> {}
+export interface CardDescriptionProps
+  extends ComponentProps<typeof CardDescription> {}
+export interface CardFooterProps extends ComponentProps<typeof CardFooter> {}
+export interface CardHeaderProps extends ComponentProps<typeof CardHeader> {}
+export interface CardTitleProps extends ComponentProps<typeof CardTitle> {}
+
+const Components = {
+  Body: CardBody,
+  Description: CardDescription,
+  Footer: CardFooter,
+  Header: CardHeader,
+  Title: CardTitle,
+}
+export const Card = Object.assign(CardRoot, Components) as typeof CardRoot &
+  typeof Components

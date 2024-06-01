@@ -7,7 +7,9 @@
     "dev": "vinxi dev",
     "build": "vinxi build",
     "start": "vinxi start",
-    "version": "vinxi version"
+    "version": "vinxi version",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@ark-ui/solid": "^3.0.0",
@@ -27,18 +29,29 @@
     "micromustache": "^8.0.3",
     "seroval": "^1.0.7",
     "solid-js": "^1.8.17",
+    "storybook-dark-mode": "^4.0.1",
     "vinxi": "^0.3.11"
   },
   "engines": {
     "node": ">=18"
   },
   "devDependencies": {
+    "@chromatic-com/storybook": "^1.5.0",
     "@pandacss/dev": "^0.39.1",
     "@park-ui/panda-preset": "^0.37.1",
+    "@storybook/addon-essentials": "^8.1.5",
+    "@storybook/addon-interactions": "^8.1.5",
+    "@storybook/addon-links": "^8.1.5",
+    "@storybook/blocks": "^8.1.5",
+    "@storybook/testing-library": "^0.2.2",
     "@types/cookie": "^0.6.0",
     "@types/html-escaper": "^3.0.2",
     "prettier": "^3.2.5",
     "solid-devtools": "^0.30.1",
+    "storybook": "^8.1.5",
+    "storybook-solidjs": "^1.0.0-beta.2",
+    "storybook-solidjs-vite": "^1.0.0-beta.2",
     "type-fest": "^4.18.2"
-  }
+  },
+  "packageManager": "pnpm@8.8.0+sha1.9922e8b650d393700209ccd81e0ebdbcbe43b0d3"
 }

@@ -20,9 +20,8 @@ const preview: Preview = {
     (Story) => {
       createEffect(() => {
         const listener = (isDark: boolean) => {
-          document.body.parentElement!.dataset["theme"] = isDark
-            ? "dark"
-            : "light"
+          // console.log("Theme changed! Is dark:", isDark)
+          document.body.parentElement!.className = isDark ? "dark" : "light"
         }
 
         channel.on(DARK_MODE_EVENT_NAME, listener)

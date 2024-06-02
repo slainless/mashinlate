@@ -2,6 +2,7 @@ import { ChatGPTAPI, type ChatGPTAPIOptions } from "chatgpt"
 import { ServiceType } from "../document"
 import { type TranslationOptions, TranslationService } from "./service"
 import { render } from "micromustache"
+import { AvailableServices } from "../service-registry"
 
 export const defaultSystemMessage =
   `You are ChatGPT, a large language model trained by OpenAI, based on the GPT-4 architecture.` +
@@ -14,7 +15,7 @@ export const defaultSystemMessage =
 export type ChatGPTInit = ChatGPTAPIOptions
 
 export class ChatGPTService extends TranslationService {
-  static serviceName = "chatgpt"
+  static serviceName = AvailableServices.ChatGPT
   serviceName = ChatGPTService.serviceName
 
   type = ServiceType.LLM

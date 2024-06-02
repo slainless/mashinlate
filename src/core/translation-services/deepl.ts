@@ -1,13 +1,14 @@
 import { Translator, type TranslateTextOptions } from "deepl-node"
 import { ServiceType } from "../document"
 import { type TranslationOptions, TranslationService } from "./service"
+import { AvailableServices } from "../service-registry"
 
 export type DeepLInit = TranslateTextOptions & {
   authKey: string
 }
 
 export class DeepLService extends TranslationService {
-  static serviceName = "deepl"
+  static serviceName = AvailableServices.DeepL
   serviceName = DeepLService.serviceName
 
   type = ServiceType.MTL

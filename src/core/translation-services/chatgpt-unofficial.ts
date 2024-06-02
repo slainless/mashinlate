@@ -2,6 +2,7 @@ import { ChatGPTUnofficialProxyAPI } from "chatgpt"
 import { ServiceType } from "../document"
 import { type TranslationOptions, TranslationService } from "./service"
 import { render } from "micromustache"
+import { AvailableServices } from "../service-registry"
 
 export const defaultSystemMessage =
   `You have to translate the document below from {{from}} to {{to}} with some constraint:\n` +
@@ -17,7 +18,7 @@ export type ChatGPTUnofficialInit = ConstructorParameters<
 }
 
 export class ChatGPTUnofficialService extends TranslationService {
-  static serviceName = "chatgpt-unofficial"
+  static serviceName = AvailableServices.ChatGPTUnofficialProxy
   serviceName = ChatGPTUnofficialService.serviceName
 
   type = ServiceType.LLM

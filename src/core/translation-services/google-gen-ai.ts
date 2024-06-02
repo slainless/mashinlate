@@ -6,6 +6,7 @@ import {
   GenerativeModel,
   type ModelParams,
 } from "@google/generative-ai"
+import { AvailableServices } from "../service-registry"
 
 export const defaultSystemMessage =
   `You have to translate the document below from {{from}} to {{to}} with some constraint:\n` +
@@ -20,7 +21,7 @@ export type GoogleGenerativeAIInit = Omit<ModelParams, "model"> & {
 }
 
 export class GoogleGenerativeAIService extends TranslationService {
-  static serviceName = "google-generative-ai"
+  static serviceName = AvailableServices.GoogleGenerativeAI
   serviceName = GoogleGenerativeAIService.serviceName
 
   type = ServiceType.LLM

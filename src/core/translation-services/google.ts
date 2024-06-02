@@ -1,4 +1,5 @@
 import { ServiceType } from "../document"
+import { AvailableServices } from "../service-registry"
 import { type TranslationOptions, TranslationService } from "./service"
 import { translate } from "@vitalets/google-translate-api"
 
@@ -8,7 +9,7 @@ export type GoogleTranslateInit = Omit<
 >
 
 export class GoogleTranslateService extends TranslationService {
-  static serviceName = "google-translate"
+  static serviceName = AvailableServices.GoogleTranslate
   serviceName = GoogleTranslateService.serviceName
 
   type = ServiceType.MTL

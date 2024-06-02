@@ -1,5 +1,6 @@
 import type { SourceLanguageCode, TargetLanguageCode } from "deepl-node"
 import { type Service, ServiceType } from "../document"
+import type { Constructor } from "type-fest"
 
 export interface TranslationOptions {
   from: SourceLanguageCode

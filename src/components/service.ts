@@ -1,30 +1,25 @@
 import { AvailableServices } from "~/core/service-registry"
 
-const service = (id: AvailableServices, title: string, desc?: string) => ({
-  id,
+const service = (title: string, desc?: string) => ({
   title,
   desc,
 })
-export const availableServices = [
-  service(
-    AvailableServices.ChatGPT,
+export const availableServices = {
+  [AvailableServices.ChatGPT]: service(
     "ChatGPT",
     "Uses the latest official ChatGPT API (Supports v4 and Turbo)",
   ),
-  service(
-    AvailableServices.GoogleGenerativeAI,
+  [AvailableServices.GoogleGenerativeAI]: service(
     "Google Generative AI",
     "Uses Google Generative AI with Gemini Pro 1.0 model",
   ),
-  service(
-    AvailableServices.ChatGPTUnofficialProxy,
+  [AvailableServices.ChatGPTUnofficialProxy]: service(
     "Unofficial ChatGPT Proxy",
     "Uses proxied public web-based ChatGPT services",
   ),
-  service(
-    AvailableServices.GoogleTranslate,
+  [AvailableServices.GoogleTranslate]: service(
     "Google Translate",
     "Uses Google Translate API",
   ),
-  service(AvailableServices.DeepL, "DeepL", "Uses DeepL API"),
-]
+  [AvailableServices.DeepL]: service("DeepL", "Uses DeepL API"),
+}

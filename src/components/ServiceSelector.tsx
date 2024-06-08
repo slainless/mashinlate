@@ -5,6 +5,7 @@ import { styled } from "styled-system/jsx"
 import { ServiceLogo } from "./ServiceLogo"
 import { css } from "styled-system/css"
 import { ToggleGroup } from "@ark-ui/solid"
+import type { AvailableServices } from "~/core/service-registry"
 
 const Container = styled(ToggleGroup.Root, {
   base: {
@@ -40,19 +41,20 @@ export interface ServiceSelectorProps extends CardRootProps {}
 export function ServiceSelector() {
   return (
     <Container>
-      <Index each={availableServices}>
+      <Index each={Object.entries(availableServices)}>
         {(item, index) => {
+          const [key, value] = item()
           return (
             <Item
               // asChild={(props) => <Item {...props()} />}
-              value={item().id}
+              value={key}
             >
-              <ServiceLogo h="8" service={item().id} />
-              <div class={css({ textStyle: "sm", mt: "2" })}>
-                {item().title}
+              <ServiceLogo h="8" service={key as AvailableServices} />
+              <div class={css({ textStyle: "sm", mt: "2", fontWeight: "600" })}>
+                {value.title}
               </div>
               <div class={css({ textStyle: "xs", mt: "1", color: "fg.muted" })}>
-                {item().desc}
+                {value.desc}
               </div>
             </Item>
           )

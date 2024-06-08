@@ -32,8 +32,10 @@ export namespace Schema {
 
   export const Service = Type.Object({
     id: Type.String(),
+    order: Type.Optional(Type.Number()),
 
     serviceName: Type.String(),
+    name: Type.Optional(Type.String()),
     type: Type.Enum(ServiceType),
 
     init: Type.Optional(Type.Record(Type.String(), Type.Any())),

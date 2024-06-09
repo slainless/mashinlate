@@ -125,10 +125,11 @@ export function GuiRenderer<T extends GuiComponent[]>(
               return (
                 <InputContainer schema={item}>
                   <Input
-                    placeholder={item.placeholder}
+                    placeholder={item.placeholder ?? item.label}
                     onChange={(v) => {
                       setStore(item.key, () => v.target.value)
                     }}
+                    size="sm"
                     value={store[item.key]}
                   />
                 </InputContainer>
@@ -137,11 +138,12 @@ export function GuiRenderer<T extends GuiComponent[]>(
               return (
                 <InputContainer schema={item}>
                   <Textarea
-                    placeholder={item.placeholder}
+                    placeholder={item.placeholder ?? item.label}
                     onChange={(v) => {
                       setStore(item.key, () => v.target.value)
                     }}
                     value={store[item.key]}
+                    size="sm"
                   />
                 </InputContainer>
               )

@@ -1,5 +1,5 @@
 import { Index } from "solid-js"
-import { Card, type CardRootProps } from "./base/card"
+import { Card, type RootProps } from "./base/card"
 import { availableServices } from "./service"
 import { styled } from "styled-system/jsx"
 import { ServiceLogo } from "./ServiceLogo"
@@ -37,7 +37,7 @@ const Item = styled(ToggleGroup.Item, {
   },
 })
 
-export interface ServiceSelectorProps extends CardRootProps {}
+export interface ServiceSelectorProps extends RootProps {}
 export function ServiceSelector() {
   return (
     <Container>

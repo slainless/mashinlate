@@ -8,23 +8,27 @@ import {
 } from "solid-js"
 import { isServer } from "solid-js/web"
 import { createLogger } from "~/core/pino"
+import type * as MonacoModule from "monaco-editor"
 
 const def = (i: any) => i.default
 
 export const MonacoContext = createContext({
   isReady: createSignal(false)[0],
+  monacoModule: createSignal<typeof MonacoModule>()[0],
 })
 
 export interface MonacoProviderProps extends ParentProps {}
 export function MonacoProvider(props: MonacoProviderProps) {
   const logger = createLogger(MonacoProvider)
   const [isReady, setIsReady] = createSignal(false)
+  const [monacoModule, setMonacoModule] = createSignal<typeof MonacoModule>()
 
   const packages = createAsync(async () => {
     if (isServer) return
     return Promise.all([
       import("monaco-editor/esm/vs/editor/editor.worker?worker").then(def),
       import("monaco-editor/esm/vs/language/json/json.worker?worker").then(def),
+      import("monaco-editor"),
       // import("monaco-editor/esm/vs/language/css/css.worker?worker").then(def),
       // import("monaco-editor/esm/vs/language/html/html.worker?worker").then(
       //   def,
@@ -39,8 +43,11 @@ export function MonacoProvider(props: MonacoProviderProps) {
     if (isServer) return
     if (packages() == null) return
 
-    logger().debug({ packages: ["json", "editor"] }, "Worker package(s) loaded")
-    const [editorWorker, jsonWorker] = packages()!
+    logger().debug(
+      { workers: ["json", "editor"] },
+      "Monaco Editor & Worker package(s) loaded",
+    )
+    const [editorWorker, jsonWorker, monacoEditor] = packages()!
 
     self.MonacoEnvironment = {
       getWorker(_, label) {
@@ -60,7 +67,9 @@ export function MonacoProvider(props: MonacoProviderProps) {
       },
     }
     logger().debug("Monaco environment ready")
+
     setIsReady(true)
+    setMonacoModule(monacoEditor)
 
     return () => {
       if (self.MonacoEnvironment) {
@@ -75,6 +84,7 @@ export function MonacoProvider(props: MonacoProviderProps) {
       children={props.children}
       value={{
         isReady,
+        monacoModule,
       }}
     />
   )
@@ -82,4 +92,8 @@ export function MonacoProvider(props: MonacoProviderProps) {
 
 export function useMonacoReady() {
   return useContext(MonacoContext).isReady
+}
+
+export function useMonacoModule() {
+  return useContext(MonacoContext).monacoModule
 }

@@ -6,10 +6,10 @@ import "./app.css"
 import { AppStoreProvider } from "./components/context/app"
 import { ActiveDocumentProvider } from "./components/context/active-document"
 import { NewDocumentProvider } from "./components/context/new-document"
-import { handleClientThemeCookie } from "./core/theme"
+import { MonacoProvider } from "./components/MonacoProvider"
+import { ThemeProvider } from "./components/ThemeProvider"
 
 export default function App() {
-  handleClientThemeCookie()
   return (
     <Router
       root={(props) => (
@@ -17,7 +17,11 @@ export default function App() {
           <AppStoreProvider>
             <ActiveDocumentProvider>
               <NewDocumentProvider>
-                <Suspense>{props.children}</Suspense>
+                <ThemeProvider>
+                  <Suspense>
+                    <MonacoProvider>{props.children}</MonacoProvider>
+                  </Suspense>
+                </ThemeProvider>
               </NewDocumentProvider>
             </ActiveDocumentProvider>
           </AppStoreProvider>

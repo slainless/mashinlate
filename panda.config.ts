@@ -30,4 +30,13 @@ export default defineConfig({
       "--global-font-body": '"Plus Jakarta Sans"',
     },
   },
+  theme: {
+    extend: {
+      recipes: {
+        iconButton: {
+          jsx: ["IconButton", "ThemeSwitcherButton"],
+        },
+      },
+    },
+  },
 })

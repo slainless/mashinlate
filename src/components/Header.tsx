@@ -4,6 +4,8 @@ import { styled } from "styled-system/jsx"
 import { createStore } from "solid-js/store"
 import { css } from "styled-system/css"
 import { useMatch } from "@solidjs/router"
+import { ThemeSwitcherButton } from "./ThemeSwitcherButton"
+import { hstack } from "styled-system/patterns/hstack"
 
 const route = (
   display: string,
@@ -16,14 +18,14 @@ const route = (
 })
 
 const HeaderContainer = styled("header", {
-  base: {
+  base: hstack.raw({
     p: "2",
     borderBlockEnd: "1px solid",
     borderBlockEndColor: "border.subtle",
     background: "bg.canvas/90",
     backdropBlur: "md",
     backdropFilter: "auto",
-  },
+  }),
 })
 
 export interface HeaderProps extends ComponentProps<typeof HeaderContainer> {}
@@ -74,6 +76,7 @@ export function Header(props: HeaderProps) {
           </Tabs.List>
         </Tabs>
       </nav>
+      <ThemeSwitcherButton size="xs" />
     </HeaderContainer>
   )
 }

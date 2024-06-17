@@ -15,7 +15,7 @@ function normalizeTheme(theme: string) {
   return Theme.System
 }
 
-function createThemeCookie(theme: Theme) {
+export function createThemeCookie(theme: Theme) {
   return serialize(THEME_COOKIE_KEY, theme, {
     maxAge: 60 * 60 * 24 * 365,
   })
@@ -30,19 +30,4 @@ export function handleServerThemeCookie() {
 
   event.response.headers.append("Set-Cookie", createThemeCookie(preferredTheme))
   return preferredTheme
-}
-
-export function handleClientThemeCookie() {
-  if (isServer) return
-  createRenderEffect(() => {
-    const html = document.body.parentElement!
-    if (html.dataset["theme"] !== "system") return
-
-    const preferredTheme = window.matchMedia("(prefers-color-scheme: dark)")
-      ? Theme.Dark
-      : Theme.Light
-
-    html.dataset["theme"] = preferredTheme
-    document.cookie = createThemeCookie(preferredTheme)
-  })
 }

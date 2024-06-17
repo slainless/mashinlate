@@ -1,13 +1,17 @@
 import {
   createContext,
+  createMemo,
   createRenderEffect,
   createSignal,
   useContext,
+  type Accessor,
   type ParentProps,
   type Signal,
 } from "solid-js"
 import { isServer } from "solid-js/web"
 import { createThemeCookie, Theme } from "~/core/theme"
+
+export const SSR_PREFERRED_THEME = Theme.Dark
 
 export const ThemeContext = createContext(createSignal(Theme.System))
 
@@ -46,6 +50,18 @@ export function ThemeProvider(props: ThemeProviderProps) {
 
 export function useTheme() {
   return useContext(ThemeContext)[0]
+}
+
+export function usePreferredTheme(): Accessor<Theme.Dark | Theme.Light> {
+  const theme = useTheme()
+  // @ts-expect-error
+  return createMemo(() => {
+    if (theme() !== Theme.System) return theme()
+    if (isServer) return SSR_PREFERRED_THEME
+    return window.matchMedia("(prefers-color-scheme: dark)")
+      ? Theme.Dark
+      : Theme.Light
+  })
 }
 
 export function setTheme(theme: Theme) {

@@ -1,3 +1,4 @@
+import { createAsync } from "@solidjs/router"
 import {
   createContext,
   createRenderEffect,
@@ -6,6 +7,9 @@ import {
   type ParentProps,
 } from "solid-js"
 import { isServer } from "solid-js/web"
+import { createLogger } from "~/core/pino"
+
+const def = (i: any) => i.default
 
 export const MonacoContext = createContext({
   isReady: createSignal(false)[0],
@@ -13,19 +17,12 @@ export const MonacoContext = createContext({
 
 export interface MonacoProviderProps extends ParentProps {}
 export function MonacoProvider(props: MonacoProviderProps) {
+  const logger = createLogger(MonacoProvider)
   const [isReady, setIsReady] = createSignal(false)
 
-  createRenderEffect(async () => {
+  const packages = createAsync(async () => {
     if (isServer) return
-
-    const def = (i: any) => i.default
-    const [
-      editorWorker,
-      jsonWorker,
-      // cssWorker,
-      // htmlWorker,
-      // tsWorker
-    ] = await Promise.all([
+    return Promise.all([
       import("monaco-editor/esm/vs/editor/editor.worker?worker").then(def),
       import("monaco-editor/esm/vs/language/json/json.worker?worker").then(def),
       // import("monaco-editor/esm/vs/language/css/css.worker?worker").then(def),
@@ -35,10 +32,15 @@ export function MonacoProvider(props: MonacoProviderProps) {
       // import(
       //   "monaco-editor/esm/vs/language/typescript/ts.worker?worker"
       // ).then(def),
-      // import("@codingame/monaco-vscode-json-default-extension"),
     ])
+  })
 
-    setIsReady(true)
+  createRenderEffect(async () => {
+    if (isServer) return
+    if (packages() == null) return
+
+    logger().debug({ packages: ["json", "editor"] }, "Worker package(s) loaded")
+    const [editorWorker, jsonWorker] = packages()!
 
     self.MonacoEnvironment = {
       getWorker(_, label) {
@@ -57,6 +59,8 @@ export function MonacoProvider(props: MonacoProviderProps) {
         return new editorWorker()
       },
     }
+    logger().debug("Monaco environment ready")
+    setIsReady(true)
 
     return () => {
       if (self.MonacoEnvironment) {

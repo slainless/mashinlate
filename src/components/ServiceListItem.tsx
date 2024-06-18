@@ -23,6 +23,14 @@ import type {
   ElementDragType,
   DropTargetLocalizedData,
 } from "@atlaskit/pragmatic-drag-and-drop/dist/types/internal-types"
+import {
+  attachClosestEdge,
+  extractClosestEdge,
+  type Edge,
+} from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
+import { DropIndicator } from "./DropIndicator"
+
+export type PossibleEdge = "top" | "bottom"
 
 const Item = styled("div", {
   base: {
@@ -44,14 +52,22 @@ const Item = styled("div", {
   },
 })
 
-const DropArea = styled("div", {
+const DropIndicatorWrapper = styled("div", {
   base: {
+    position: "absolute",
     w: "100%",
-    h: "var(--service-list-item-height)",
-    mb: "var(--service-list-gap)",
-    border: "2px dashed",
-    borderColor: "border.subtle",
-    borderRadius: "sm",
+  },
+  variants: {
+    edge: {
+      top: {
+        top: "calc(calc(-1 * var(--service-list-gap)) / 2)",
+        transform: "translateY(-50%)",
+      },
+      bottom: {
+        bottom: "calc(calc(-1 * var(--service-list-gap)) / 2)",
+        transform: "translateY(50%)",
+      },
+    },
   },
 })
 
@@ -63,7 +79,7 @@ export interface ServiceListItemProps extends ComponentProps<"div"> {
 }
 export function ServiceListItem(props: ServiceListItemProps) {
   const [isDragged, setIsDragged] = createSignal(false)
-  const [isTargeted, setIsTargeted] = createSignal(false)
+  const [isTargeted, setIsTargeted] = createSignal<PossibleEdge>()
   const [mainProps, restProps] = splitProps(props, [
     "service",
     "onReceiveDrop",
@@ -86,21 +102,33 @@ export function ServiceListItem(props: ServiceListItemProps) {
     })
     const cleanupDropTarget = dropTargetForElements({
       element: ref,
+      getData({ input, element }) {
+        const data = {
+          ...props.service,
+        }
+        return attachClosestEdge(data, {
+          input,
+          element,
+          allowedEdges: ["top", "bottom"],
+        })
+      },
       onDragEnter(args) {
-        setIsTargeted(true)
+        const edge = extractClosestEdge(args.self.data)
+        if (edge != "top" && edge != "bottom") return
+        setIsTargeted(edge)
       },
       onDragLeave(args) {
-        setIsTargeted(false)
+        setIsTargeted()
       },
       onDrop({ source, self, location }) {
-        setIsTargeted(false)
+        setIsTargeted()
         if (source.element === self.element) return
         mainProps.onReceiveDrop?.({ source, self, location })
       },
-      canDrop({ element, source }) {
-        if (element === source.element) return false
-        return true
-      },
+      // canDrop({ element, source }) {
+      //   if (element === source.element) return false
+      //   return true
+      // },
     })
 
     return () => {
@@ -114,16 +142,20 @@ export function ServiceListItem(props: ServiceListItemProps) {
       ref={ref}
       class={cx(
         css({
-          display: isDragged() ? "none" : "initial",
-          paddingBlockStart: "var(--service-list-gap)",
+          position: "relative",
         }),
         mainProps.class,
       )}
       {...restProps}
     >
-      <DropArea display={isTargeted() ? "block" : "none"} />
+      <DropIndicatorWrapper
+        edge="top"
+        display={isTargeted() === "top" ? "block" : "none"}
+      >
+        <DropIndicator />
+      </DropIndicatorWrapper>
 
-      <Item>
+      <Item opacity={isDragged() ? 0.3 : 1}>
         <IconButton size="xs" variant="outline">
           <Menu />
         </IconButton>
@@ -159,6 +191,13 @@ export function ServiceListItem(props: ServiceListItemProps) {
           <Grip color={token("colors.fg.subtle")} size={12} />
         </div>
       </Item>
+
+      <DropIndicatorWrapper
+        edge="bottom"
+        display={isTargeted() === "bottom" ? "block" : "none"}
+      >
+        <DropIndicator />
+      </DropIndicatorWrapper>
     </div>
   )
 }

@@ -2,22 +2,27 @@ import { For } from "solid-js"
 import { styled } from "styled-system/jsx"
 import { vstack } from "styled-system/patterns"
 import type { Service } from "~/core/document"
-import { ServiceListItem } from "./ServiceListItem"
-import { css } from "styled-system/css"
-import { createStore, produce } from "solid-js/store"
+import { ServiceListItem, type PossibleEdge } from "./ServiceListItem"
+import { extractClosestEdge } from "@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge"
 
 const Container = styled("div", {
   base: vstack.raw({
     alignItems: "stretch",
-    gap: "0",
     "--service-list-gap": "{spacing.2.5}",
     "--service-list-item-height": "calc({spacing.16} + {spacing.2})",
+    gap: "var(--service-list-gap)",
   }),
 })
 
+type OrderChangeItem = {
+  id: string
+  index: number
+  element: HTMLDivElement
+}
 export interface OrderChange {
-  from: { id: string; order: number; element: HTMLDivElement }
-  to: { id: string; order: number; element: HTMLDivElement }
+  source: OrderChangeItem
+  target: OrderChangeItem
+  closestEdgeOfTarget: PossibleEdge
 }
 
 export interface ServiceListProps {
@@ -43,25 +48,30 @@ export function ServiceList(props: ServiceListProps) {
                 const fromOrder = from.dataset["order"]
                 const toOrder = to.dataset["order"]
 
+                const edge = extractClosestEdge(self.data)
+
                 if (
                   fromId == null ||
                   fromOrder == null ||
                   toId == null ||
-                  toOrder == null
+                  toOrder == null ||
+                  edge == null ||
+                  (edge != "top" && edge != "bottom")
                 )
                   return
 
                 props.onOrderChange?.({
-                  from: {
+                  source: {
                     id: fromId,
+                    index: +fromOrder,
                     element: from,
-                    order: +fromOrder,
                   },
-                  to: {
+                  target: {
                     id: toId,
+                    index: +toOrder,
                     element: to,
-                    order: +toOrder,
                   },
+                  closestEdgeOfTarget: edge,
                 })
               }}
               data-id={item.id}

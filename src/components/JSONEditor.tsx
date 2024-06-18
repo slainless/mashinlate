@@ -1,4 +1,11 @@
-import { createEffect, createSignal, on, type ComponentProps } from "solid-js"
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  on,
+  splitProps,
+  type ComponentProps,
+} from "solid-js"
 import { css, cx } from "styled-system/css"
 import { useMonacoModule, useMonacoReady } from "./MonacoProvider"
 import { isServer } from "solid-js/web"
@@ -10,8 +17,10 @@ import { nanoid } from "nanoid"
 
 export interface JSONEditorProps extends ComponentProps<"div"> {}
 export function JSONEditor(props: JSONEditorProps) {
-  const { id, class: className, ...restProps } = props
-  const $id = id == null ? `json-editor-${nanoid(4)}` : id
+  const [splittedProps, restProps] = splitProps(props, ["id", "class"])
+  const $id = createMemo(() =>
+    splittedProps.id == null ? `json-editor-${nanoid(4)}` : splittedProps.id,
+  )
 
   const logger = createLogger(JSONEditor)
 
@@ -24,7 +33,7 @@ export function JSONEditor(props: JSONEditorProps) {
   const theme = usePreferredTheme()
 
   createEffect(
-    on([isMonacoReady, monacoEditor], () => {
+    on([isMonacoReady, monacoEditor, $id], () => {
       if (isServer) return
       if (isMonacoReady() == false) return
       if (monacoEditor() == null) return
@@ -42,7 +51,7 @@ export function JSONEditor(props: JSONEditorProps) {
 
       mountedEditor()?.dispose()
       setMountedEditor(
-        monacoEditor()!.editor.create(document.getElementById($id)!, {
+        monacoEditor()!.editor.create(document.getElementById($id())!, {
           language: "json",
           minimap: {
             enabled: false,
@@ -66,13 +75,13 @@ export function JSONEditor(props: JSONEditorProps) {
 
   return (
     <div
-      id={$id}
+      id={$id()}
       class={cx(
         css({
           height: "100%",
           minH: "240px",
         }),
-        className,
+        splittedProps.class,
       )}
       {...restProps}
     ></div>

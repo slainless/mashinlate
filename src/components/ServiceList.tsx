@@ -1,4 +1,4 @@
-import { For } from "solid-js"
+import { For, Index } from "solid-js"
 import { styled } from "styled-system/jsx"
 import { vstack } from "styled-system/patterns"
 import type { Service } from "~/core/document"
@@ -32,12 +32,12 @@ export interface ServiceListProps {
 export function ServiceList(props: ServiceListProps) {
   return (
     <Container>
-      <For each={props.services ?? []}>
+      <Index each={props.services ?? []}>
         {(item, index) => {
-          const order = item.order ?? index()
+          const order = item().order ?? index
           return (
             <ServiceListItem
-              service={item}
+              service={item()}
               onReceiveDrop={({ self, source }) => {
                 const from = source.element as HTMLDivElement
                 const to = self.element as HTMLDivElement
@@ -74,13 +74,13 @@ export function ServiceList(props: ServiceListProps) {
                   closestEdgeOfTarget: edge,
                 })
               }}
-              data-id={item.id}
+              data-id={item().id}
               data-order={order}
               style={{ order }}
             />
           )
         }}
-      </For>
+      </Index>
     </Container>
   )
 }
